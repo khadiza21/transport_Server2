@@ -7,7 +7,6 @@ const port = process.env.PORT || 5000;
 //middleware
 app.use(cors());
 
-
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -47,6 +46,7 @@ async function run() {
       .db("trasportsytem")
       .collection("cardriveraccount");
     const aboutCart = client.db("trasportsytem").collection("aboutcart");
+    const cardata = client.db("trasportsytem").collection("cardata");
 
     //  for user and admin
     // crate user admin a
@@ -102,10 +102,6 @@ async function run() {
       }
     });
 
-   
-  
-
-
     // busdriver
     app.post("/busdriveraccount", async (req, res) => {
       const busdriver = req.body;
@@ -129,8 +125,6 @@ async function run() {
       const result = await busDriverCollection.findOne(query);
       res.send(result);
     });
-
-
 
     app.put("/busdriveraccount/:id", async (req, res) => {
       try {
@@ -158,7 +152,6 @@ async function run() {
       }
     });
 
-
     // cardriver
     app.post("/cardriveraccount", async (req, res) => {
       const cardriver = req.body;
@@ -182,8 +175,6 @@ async function run() {
       const result = await carDriverCollection.findOne(query);
       res.send(result);
     });
-
-
 
     app.put("/cardriveraccount/:id", async (req, res) => {
       try {
@@ -211,8 +202,6 @@ async function run() {
       }
     });
 
-
-
     // car items types
     app.get("/cartypes", async (req, res) => {
       const cartypesresult = await cartypesCollection.find().toArray();
@@ -233,14 +222,36 @@ async function run() {
       res.send(reversedReviews);
     });
 
-
     app.post("/review", async (req, res) => {
       const review = req.body;
       const result = await reviewCollection.insertOne(review);
       res.send(result);
     });
+    // all cardata
+    app.get("/cardata", async (req, res) => {
+      const cardataresult = await cardata.find().toArray();
+      console.log("cardata ", cardataresult);
+      res.send(cardataresult);
+    });
 
+    app.post("/cardata", async (req, res) => {
+      const { email, role, name, ...vehicleData } = req.body;
 
+      try {
+        const result = await cardata.insertOne({
+          email,
+          role,
+          name,
+          ...vehicleData,
+        });
+        res
+          .status(201)
+          .send({ message: "Form data saved successfully!", result });
+      } catch (error) {
+        res.status(500).send({ message: "Error saving form data", error });
+      }
+      console.log(res, "tst");
+    });
 
     // about page data
     app.get("/aboutcart", async (req, res) => {
