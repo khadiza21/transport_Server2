@@ -236,7 +236,10 @@ async function run() {
       const { status } = req.body;
 
       try {
-        const result = await ordersCollection.updateOne({ _id: new ObjectId(id) }, { $set: { status } });
+        const result = await ordersCollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { status } }
+        );
 
         if (result.modifiedCount === 1) {
           res
@@ -251,21 +254,17 @@ async function run() {
       }
     });
 
-
-
-    app.delete('/orderhistory/:id', async (req, res) => {
+    app.delete("/orderhistory/:id", async (req, res) => {
       const id = req.params.id;
-      try {
-          const result = await ordersCollection.deleteOne({ _id: new ObjectId(id) });
-          if (result.deletedCount === 1) {
-              res.json({ message: 'Order deleted successfully' });
-          } else {
-              res.status(404).json({ error: 'Order not found' });
-          }
-      } catch (err) {
-          res.status(500).json({ error: err.message });
+      const result = await ordersCollection.deleteOne({
+        _id: new ObjectId(id),
+      });
+      if (result.deletedCount === 1) {
+        res.json({ message: "Order deleted successfully" });
+      } else {
+        res.status(404).json({ error: "Order not found" });
       }
-  });
+    });
 
     // car items types
     app.get("/cartypes", async (req, res) => {
