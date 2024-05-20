@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
+const { ObjectId } = require("mongodb");
 
 //middleware
 app.use(cors());
@@ -47,7 +48,9 @@ async function run() {
       .collection("cardriveraccount");
     const aboutCart = client.db("trasportsytem").collection("aboutcart");
     const cardata = client.db("trasportsytem").collection("cardata");
-    const ordersCollection = client.db("trasportsytem").collection("orderhistory");
+    const ordersCollection = client
+      .db("trasportsytem")
+      .collection("orderhistory");
 
     //  for user and admin
     // crate user admin a
@@ -202,18 +205,51 @@ async function run() {
       }
     });
 
-//orderhistory
-    app.post('/orderhistory', async (req, res) => {
+    //orderhistory
+    app.post("/orderhistory", async (req, res) => {
       try {
-      const order = req.body;
-      const result = await ordersCollection.insertOne(order);
-      res.status(201).send(result);
-    } catch (error) {
-      console.error('Error inserting order:', error);
-      res.status(500).send({ error: 'Failed to insert order' });
-    }
-});
+        const order = req.body;
+        const result = await ordersCollection.insertOne(order);
+        res.status(201).send(result);
+      } catch (error) {
+        console.error("Error inserting order:", error);
+        res.status(500).send({ error: "Failed to insert order" });
+      }
+    });
 
+    app.get("/orderhistory", async (req, res) => {
+      const orderresult = await ordersCollection.find().toArray();
+      console.log("orderhistory ", orderresult);
+
+      res.send(orderresult);
+    });
+    app.get("/orderhistory/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await ordersCollection.findOne(query);
+      console.log(result);
+      res.send(result);
+    });
+
+    app.patch("/orderhistory/:id", async (req, res) => {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      try {
+        const result = await ordersCollection.updateOne({ _id: new ObjectId(id) }, { $set: { status } });
+
+        if (result.modifiedCount === 1) {
+          res
+            .status(200)
+            .json({ message: "Order status updated successfully" });
+        } else {
+          res.status(404).json({ message: "Order not found" });
+        }
+      } catch (error) {
+        console.error("Error updating order status:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+      }
+    });
 
     // car items types
     app.get("/cartypes", async (req, res) => {
