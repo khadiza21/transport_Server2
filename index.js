@@ -251,6 +251,22 @@ async function run() {
       }
     });
 
+
+
+    app.delete('/orderhistory/:id', async (req, res) => {
+      const id = req.params.id;
+      try {
+          const result = await ordersCollection.deleteOne({ _id: new ObjectId(id) });
+          if (result.deletedCount === 1) {
+              res.json({ message: 'Order deleted successfully' });
+          } else {
+              res.status(404).json({ error: 'Order not found' });
+          }
+      } catch (err) {
+          res.status(500).json({ error: err.message });
+      }
+  });
+
     // car items types
     app.get("/cartypes", async (req, res) => {
       const cartypesresult = await cartypesCollection.find().toArray();
