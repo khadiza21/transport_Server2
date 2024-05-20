@@ -47,6 +47,7 @@ async function run() {
       .collection("cardriveraccount");
     const aboutCart = client.db("trasportsytem").collection("aboutcart");
     const cardata = client.db("trasportsytem").collection("cardata");
+    const ordersCollection = client.db("trasportsytem").collection("orderhistory");
 
     //  for user and admin
     // crate user admin a
@@ -151,7 +152,6 @@ async function run() {
         res.status(500).send({ error: "Internal Server Error" });
       }
     });
-
     // cardriver
     app.post("/cardriveraccount", async (req, res) => {
       const cardriver = req.body;
@@ -201,6 +201,19 @@ async function run() {
         res.status(500).send({ error: "Internal Server Error" });
       }
     });
+
+//orderhistory
+    app.post('/orderhistory', async (req, res) => {
+      try {
+      const order = req.body;
+      const result = await ordersCollection.insertOne(order);
+      res.status(201).send(result);
+    } catch (error) {
+      console.error('Error inserting order:', error);
+      res.status(500).send({ error: 'Failed to insert order' });
+    }
+});
+
 
     // car items types
     app.get("/cartypes", async (req, res) => {
