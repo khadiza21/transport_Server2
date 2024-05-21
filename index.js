@@ -112,37 +112,23 @@ async function run() {
         res.status(404).json({ error: "user not found" });
       }
     });
-
     app.patch("/users/:id", async (req, res) => {
       const { id } = req.params;
       const { verifiedStatus } = req.body;
-      const result = await userCollection.updateOne(
-        { _id: id },
-        { $set: { verifiedStatus } }
-      );
 
-      if (result.modifiedCount === 1) {
-        res.status(200).json({ message: "User verified successfully" });
-      } else {
-        res.status(404).json({ message: "User not found" });
-      }
+        const result = await userCollection.updateOne(
+          { _id: ObjectId(id) },
+          { $set: { verifiedStatus } }
+        );
+    
+        if (result.modifiedCount === 1) {
+          res.status(200).json({ message: "User verified successfully" });
+        } else {
+          res.status(404).json({ message: "User not found" });
+        }
+      
     });
-
-    app.patch("/orderhistory/:id", async (req, res) => {
-      const { id } = req.params;
-      const { status } = req.body;
-
-      const result = await ordersCollection.updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { status } }
-      );
-
-      if (result.modifiedCount === 1) {
-        res.status(200).json({ message: "Order status updated successfully" });
-      } else {
-        res.status(404).json({ message: "Order not found" });
-      }
-    });
+   
 
     // busdriver
     app.post("/busdriveraccount", async (req, res) => {
@@ -239,6 +225,16 @@ async function run() {
       } catch (error) {
         console.error("Error updating user:", error);
         res.status(500).send({ error: "Internal Server Error" });
+      }
+    });
+    
+    app.delete("/cardriveraccount/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await carDriverCollection.deleteOne({ _id: id });
+      if (result.deletedCount === 1) {
+        res.json({ message: "Cardriver removed successfully" });
+      } else {
+        res.status(404).json({ error: "Cardriver not found" });
       }
     });
 
