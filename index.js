@@ -179,6 +179,16 @@ async function run() {
         res.status(500).send({ error: "Internal Server Error" });
       }
     });
+    app.delete("/busdriveraccount/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await busDriverCollection.deleteOne({ _id: id });
+      if (result.deletedCount === 1) {
+        res.json({ message: "Busdriver removed successfully" });
+      } else {
+        res.status(404).json({ error: "Busdriver not found" });
+      }
+    });
+
     // cardriver
     app.post("/cardriveraccount", async (req, res) => {
       const cardriver = req.body;
