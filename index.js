@@ -375,6 +375,23 @@ async function run() {
       }
     });
 
+    app.patch("/cardata/:id", async (req, res) => {
+      const { id } = req.params;
+      const { verifiedStatus } = req.body;
+
+        const result = await cardata.updateOne(
+          { _id: ObjectId(id) },
+          { $set: { verifiedStatus } }
+        );
+    
+        if (result.modifiedCount === 1) {
+          res.status(200).json({ message: "Car verified successfully" });
+        } else {
+          res.status(404).json({ message: "Car not found" });
+        }
+      
+    });
+
 
     // car items types
     app.get("/cartypes", async (req, res) => {
