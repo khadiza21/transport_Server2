@@ -369,7 +369,7 @@ async function run() {
         _id: new ObjectId(id),
       });
       if (result.deletedCount === 1) {
-        res.json({ message: "Car deleted successfully" });
+        res.json({ message: "Car Deleted Successfully" });
       } else {
         res.status(404).json({ error: "Car not found" });
       }
