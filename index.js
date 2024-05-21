@@ -81,7 +81,7 @@ async function run() {
     });
 
     app.put("/users/:id", async (req, res) => {
-      try {
+     
         const userId = req.params.id;
         const user = req.body;
         const filter = { _id: userId };
@@ -100,18 +100,12 @@ async function run() {
           return res.status(404).send({ message: "User not found" });
         }
         res.send({ message: "User updated successfully" });
-      } catch (error) {
-        console.error("Error updating user:", error);
-        res.status(500).send({ error: "Internal Server Error from" });
-      }
+     
     });
-
 
     app.delete("/users/:id", async (req, res) => {
       const id = req.params.id;
-      const result = await userCollection.deleteOne({
-        _id: new ObjectId(id),
-      });
+      const result = await userCollection.deleteOne({ _id: id });
       if (result.deletedCount === 1) {
         res.json({ message: "User removed successfully" });
       } else {
@@ -119,6 +113,36 @@ async function run() {
       }
     });
 
+    app.patch("/users/:id", async (req, res) => {
+      const { id } = req.params;
+      const { verifiedStatus } = req.body;
+      const result = await userCollection.updateOne(
+        { _id: id },
+        { $set: { verifiedStatus } }
+      );
+
+      if (result.modifiedCount === 1) {
+        res.status(200).json({ message: "Order status updated successfully" });
+      } else {
+        res.status(404).json({ message: "Order not found" });
+      }
+    });
+
+    app.patch("/orderhistory/:id", async (req, res) => {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      const result = await ordersCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { status } }
+      );
+
+      if (result.modifiedCount === 1) {
+        res.status(200).json({ message: "Order status updated successfully" });
+      } else {
+        res.status(404).json({ message: "Order not found" });
+      }
+    });
 
     // busdriver
     app.post("/busdriveraccount", async (req, res) => {
@@ -209,7 +233,6 @@ async function run() {
           options
         );
         if (result.matchedCount === 0) {
-          // If no documents matched the filter criteria
           return res.status(404).send({ message: "User not found" });
         }
         res.send({ message: "bus driver updated successfully" });
@@ -249,22 +272,15 @@ async function run() {
       const { id } = req.params;
       const { status } = req.body;
 
-      try {
-        const result = await ordersCollection.updateOne(
-          { _id: new ObjectId(id) },
-          { $set: { status } }
-        );
+      const result = await ordersCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { status } }
+      );
 
-        if (result.modifiedCount === 1) {
-          res
-            .status(200)
-            .json({ message: "Order status updated successfully" });
-        } else {
-          res.status(404).json({ message: "Order not found" });
-        }
-      } catch (error) {
-        console.error("Error updating order status:", error);
-        res.status(500).json({ message: "Internal Server Error" });
+      if (result.modifiedCount === 1) {
+        res.status(200).json({ message: "Order status updated successfully" });
+      } else {
+        res.status(404).json({ message: "Order not found" });
       }
     });
 
