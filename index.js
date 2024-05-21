@@ -106,6 +106,7 @@ async function run() {
         res.status(404).json({ error: "user not found" });
       }
     });
+
     app.patch("/users/:id", async (req, res) => {
       const { id } = req.params;
       const { verifiedStatus } = req.body;
@@ -291,6 +292,19 @@ async function run() {
 
       res.send(orderresult);
     });
+
+    app.delete("/orderhistory/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await ordersCollection.deleteOne({
+        _id: new ObjectId(id),
+      });
+      if (result.deletedCount === 1) {
+        res.json({ message: "Order deleted successfully" });
+      } else {
+        res.status(404).json({ error: "Order not found" });
+      }
+    });
+
     app.get("/orderhistory/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -312,18 +326,6 @@ async function run() {
         res.status(200).json({ message: "Order status updated successfully" });
       } else {
         res.status(404).json({ message: "Order not found" });
-      }
-    });
-
-    app.delete("/orderhistory/:id", async (req, res) => {
-      const id = req.params.id;
-      const result = await ordersCollection.deleteOne({
-        _id: new ObjectId(id),
-      });
-      if (result.deletedCount === 1) {
-        res.json({ message: "Order deleted successfully" });
-      } else {
-        res.status(404).json({ error: "Order not found" });
       }
     });
 
@@ -375,12 +377,12 @@ async function run() {
     app.patch("/cardata/:id", async (req, res) => {
       const { id } = req.params;
       const { verifiedStatus } = req.body;
-
-      console.log(req.params);
       const result = await cardata.updateOne(
         { _id: new ObjectId(id) },
         { $set: { verifiedStatus } }
       );
+
+      console.log("Update result:", result);
 
       if (result.modifiedCount === 1) {
         res.status(200).json({ message: "Car verified successfully" });
@@ -389,6 +391,7 @@ async function run() {
       }
     });
 
+    
     // car items types
     app.get("/cartypes", async (req, res) => {
       const cartypesresult = await cartypesCollection.find().toArray();
