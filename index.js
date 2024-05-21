@@ -337,32 +337,7 @@ async function run() {
       }
     });
 
-    // car items types
-    app.get("/cartypes", async (req, res) => {
-      const cartypesresult = await cartypesCollection.find().toArray();
-      res.send(cartypesresult);
-    });
-
-    // service category
-    app.get("/categories", async (req, res) => {
-      const catresult = await categoriesCollection.find().toArray();
-      res.send(catresult);
-    });
-
-    // all reviews
-    app.get("/review", async (req, res) => {
-      const revresult = await reviewCollection.find().toArray();
-      console.log("review ", revresult);
-      const reversedReviews = revresult.reverse();
-      res.send(reversedReviews);
-    });
-
-    app.post("/review", async (req, res) => {
-      const review = req.body;
-      const result = await reviewCollection.insertOne(review);
-      res.send(result);
-    });
-    // all cardata
+  // all cardata
     app.get("/cardata", async (req, res) => {
       const cardataresult = await cardata.find().toArray();
       console.log("cardata ", cardataresult);
@@ -387,6 +362,49 @@ async function run() {
       }
       console.log(res, "tst");
     });
+
+    app.delete("/cardata/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await cardata.deleteOne({
+        _id: new ObjectId(id),
+      });
+      if (result.deletedCount === 1) {
+        res.json({ message: "Car deleted successfully" });
+      } else {
+        res.status(404).json({ error: "Car not found" });
+      }
+    });
+
+
+    // car items types
+    app.get("/cartypes", async (req, res) => {
+      const cartypesresult = await cartypesCollection.find().toArray();
+      res.send(cartypesresult);
+    });
+    
+
+    // service category
+    app.get("/categories", async (req, res) => {
+      const catresult = await categoriesCollection.find().toArray();
+      res.send(catresult);
+    });
+
+    // all reviews
+    app.get("/review", async (req, res) => {
+      const revresult = await reviewCollection.find().toArray();
+      console.log("review ", revresult);
+      const reversedReviews = revresult.reverse();
+      res.send(reversedReviews);
+    });
+
+    app.post("/review", async (req, res) => {
+      const review = req.body;
+      const result = await reviewCollection.insertOne(review);
+      res.send(result);
+    });
+
+
+  
 
     // about page data
     app.get("/aboutcart", async (req, res) => {
