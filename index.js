@@ -81,26 +81,20 @@ async function run() {
     });
 
     app.put("/users/:id", async (req, res) => {
-     
-        const userId = req.params.id;
-        const user = req.body;
-        const filter = { _id: userId };
-        const options = { upsert: true };
-        const updateDoc = {
-          $set: user,
-        };
-        console.log("udadate user", updateDoc);
-        const result = await userCollection.updateOne(
-          filter,
-          updateDoc,
-          options
-        );
-        if (result.matchedCount === 0) {
-          // If no documents matched the filter criteria
-          return res.status(404).send({ message: "User not found" });
-        }
-        res.send({ message: "User updated successfully" });
-     
+      const userId = req.params.id;
+      const user = req.body;
+      const filter = { _id: userId };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      console.log("udadate user", updateDoc);
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      if (result.matchedCount === 0) {
+        // If no documents matched the filter criteria
+        return res.status(404).send({ message: "User not found" });
+      }
+      res.send({ message: "User updated successfully" });
     });
 
     app.delete("/users/:id", async (req, res) => {
@@ -116,19 +110,17 @@ async function run() {
       const { id } = req.params;
       const { verifiedStatus } = req.body;
 
-        const result = await userCollection.updateOne(
-          { _id: ObjectId(id) },
-          { $set: { verifiedStatus } }
-        );
-    
-        if (result.modifiedCount === 1) {
-          res.status(200).json({ message: "User verified successfully" });
-        } else {
-          res.status(404).json({ message: "User not found" });
-        }
-      
+      const result = await userCollection.updateOne(
+        { _id: ObjectId(id) },
+        { $set: { verifiedStatus } }
+      );
+
+      if (result.modifiedCount === 1) {
+        res.status(200).json({ message: "User verified successfully" });
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
     });
-   
 
     // busdriver
     app.post("/busdriveraccount", async (req, res) => {
@@ -194,17 +186,16 @@ async function run() {
       const { id } = req.params;
       const { verifiedStatus } = req.body;
 
-        const result = await busDriverCollection.updateOne(
-          { _id: ObjectId(id) },
-          { $set: { verifiedStatus } }
-        );
-    
-        if (result.modifiedCount === 1) {
-          res.status(200).json({ message: "Busdriver verified successfully" });
-        } else {
-          res.status(404).json({ message: "Busdriver not found" });
-        }
-      
+      const result = await busDriverCollection.updateOne(
+        { _id: ObjectId(id) },
+        { $set: { verifiedStatus } }
+      );
+
+      if (result.modifiedCount === 1) {
+        res.status(200).json({ message: "Busdriver verified successfully" });
+      } else {
+        res.status(404).json({ message: "Busdriver not found" });
+      }
     });
 
     // cardriver
@@ -270,17 +261,16 @@ async function run() {
       const { id } = req.params;
       const { verifiedStatus } = req.body;
 
-        const result = await carDriverCollection.updateOne(
-          { _id: ObjectId(id) },
-          { $set: { verifiedStatus } }
-        );
-    
-        if (result.modifiedCount === 1) {
-          res.status(200).json({ message: "Cardriver verified successfully" });
-        } else {
-          res.status(404).json({ message: "Cardriver not found" });
-        }
-      
+      const result = await carDriverCollection.updateOne(
+        { _id: ObjectId(id) },
+        { $set: { verifiedStatus } }
+      );
+
+      if (result.modifiedCount === 1) {
+        res.status(200).json({ message: "Cardriver verified successfully" });
+      } else {
+        res.status(404).json({ message: "Cardriver not found" });
+      }
     });
 
     //orderhistory
@@ -337,11 +327,18 @@ async function run() {
       }
     });
 
-  // all cardata
+    // all cardata
     app.get("/cardata", async (req, res) => {
       const cardataresult = await cardata.find().toArray();
       console.log("cardata ", cardataresult);
       res.send(cardataresult);
+    });
+    app.get("/cardata/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await cardata.findOne(query);
+      console.log(result);
+      res.send(result);
     });
 
     app.post("/cardata", async (req, res) => {
@@ -379,30 +376,24 @@ async function run() {
       const { id } = req.params;
       const { verifiedStatus } = req.body;
 
-      // if (!ObjectId.isValid(id)) {
-      //   return res.status(400).json({ message: "Invalid ID format" });
-      // }
+      console.log(req.params);
+      const result = await cardata.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { verifiedStatus } }
+      );
 
-        const result = await cardata.updateOne(
-          { _id: new ObjectId(id) },
-          { $set: { verifiedStatus } }
-        );
-    
-        if (result.modifiedCount === 1) {
-          res.status(200).json({ message: "Car verified successfully" });
-        } else {
-          res.status(404).json({ message: "Car not found" });
-        }
-      
+      if (result.modifiedCount === 1) {
+        res.status(200).json({ message: "Car verified successfully" });
+      } else {
+        res.status(404).json({ message: "Car not found" });
+      }
     });
-
 
     // car items types
     app.get("/cartypes", async (req, res) => {
       const cartypesresult = await cartypesCollection.find().toArray();
       res.send(cartypesresult);
     });
-    
 
     // service category
     app.get("/categories", async (req, res) => {
@@ -423,9 +414,6 @@ async function run() {
       const result = await reviewCollection.insertOne(review);
       res.send(result);
     });
-
-
-  
 
     // about page data
     app.get("/aboutcart", async (req, res) => {
