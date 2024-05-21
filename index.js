@@ -106,6 +106,20 @@ async function run() {
       }
     });
 
+
+    app.delete("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await userCollection.deleteOne({
+        _id: new ObjectId(id),
+      });
+      if (result.deletedCount === 1) {
+        res.json({ message: "User removed successfully" });
+      } else {
+        res.status(404).json({ error: "user not found" });
+      }
+    });
+
+
     // busdriver
     app.post("/busdriveraccount", async (req, res) => {
       const busdriver = req.body;
