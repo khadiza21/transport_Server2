@@ -122,9 +122,9 @@ async function run() {
       );
 
       if (result.modifiedCount === 1) {
-        res.status(200).json({ message: "Order status updated successfully" });
+        res.status(200).json({ message: "User verified successfully" });
       } else {
-        res.status(404).json({ message: "Order not found" });
+        res.status(404).json({ message: "User not found" });
       }
     });
 
