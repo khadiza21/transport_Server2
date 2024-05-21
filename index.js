@@ -379,8 +379,12 @@ async function run() {
       const { id } = req.params;
       const { verifiedStatus } = req.body;
 
+      // if (!ObjectId.isValid(id)) {
+      //   return res.status(400).json({ message: "Invalid ID format" });
+      // }
+
         const result = await cardata.updateOne(
-          { _id: ObjectId(id) },
+          { _id: new ObjectId(id) },
           { $set: { verifiedStatus } }
         );
     
