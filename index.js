@@ -179,6 +179,7 @@ async function run() {
         res.status(500).send({ error: "Internal Server Error" });
       }
     });
+
     app.delete("/busdriveraccount/:id", async (req, res) => {
       const id = req.params.id;
       const result = await busDriverCollection.deleteOne({ _id: id });
@@ -187,6 +188,23 @@ async function run() {
       } else {
         res.status(404).json({ error: "Busdriver not found" });
       }
+    });
+
+    app.patch("/busdriveraccount/:id", async (req, res) => {
+      const { id } = req.params;
+      const { verifiedStatus } = req.body;
+
+        const result = await busDriverCollection.updateOne(
+          { _id: ObjectId(id) },
+          { $set: { verifiedStatus } }
+        );
+    
+        if (result.modifiedCount === 1) {
+          res.status(200).json({ message: "Busdriver verified successfully" });
+        } else {
+          res.status(404).json({ message: "Busdriver not found" });
+        }
+      
     });
 
     // cardriver
