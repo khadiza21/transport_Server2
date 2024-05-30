@@ -48,6 +48,7 @@ async function run() {
       .collection("cardriveraccount");
     const aboutCart = client.db("trasportsytem").collection("aboutcart");
     const cardata = client.db("trasportsytem").collection("cardata");
+    const busdata = client.db("trasportsytem").collection("busdata");
     const ordersCollection = client
       .db("trasportsytem")
       .collection("orderhistory");
@@ -274,6 +275,9 @@ async function run() {
       }
     });
 
+  
+    
+
     //orderhistory
     app.post("/orderhistory", async (req, res) => {
       try {
@@ -391,6 +395,27 @@ async function run() {
       }
     });
 
+
+    // bus data
+    app.post("/busdata", async (req, res) => {
+      const { email, role, name, ...vehicleData } = req.body;
+
+      try {
+        const result = await busdata.insertOne({
+          email,
+          role,
+          name,
+          phone,
+          ...vehicleData,
+        });
+        res
+          .status(201)
+          .send({ message: "Form data saved successfully!", result });
+      } catch (error) {
+        res.status(500).send({ message: "Error saving form data", error });
+      }
+      console.log(res, "tst");
+    });
     
     // car items types
     app.get("/cartypes", async (req, res) => {
