@@ -397,6 +397,19 @@ async function run() {
 
 
     // bus data
+    app.get("/busdata", async (req, res) => {
+      const busdataresult = await busdata.find().toArray();
+      console.log("busdata ", busdataresult);
+      res.send(busdataresult);
+    });
+    app.get("/busdata/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await busdata.findOne(query);
+      console.log(result);
+      res.send(result);
+    });
+
     app.post("/busdata", async (req, res) => {
       const { email, role, name, ...vehicleData } = req.body;
 
