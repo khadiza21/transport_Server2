@@ -48,6 +48,7 @@ async function run() {
       .collection("cardriveraccount");
     const aboutCart = client.db("trasportsytem").collection("aboutcart");
     const cardata = client.db("trasportsytem").collection("cardata");
+    const busSeatBookingData = client.db("trasportsytem").collection("busSeatBookingData");
     const busdata = client.db("trasportsytem").collection("busdata");
     const ordersCollection = client
       .db("trasportsytem")
@@ -124,7 +125,7 @@ async function run() {
       }
     });
 
-    // busdriver
+    // busdriver busSeatBookingData
     app.post("/busdriveraccount", async (req, res) => {
       const busdriver = req.body;
       const query = { email: busdriver.email };
@@ -199,6 +200,23 @@ async function run() {
         res.status(404).json({ message: "Busdriver not found" });
       }
     });
+
+
+    //busbooking data
+    app.get("/busSeatBookingData", async (req, res) => {
+      const busSeatBook = await busSeatBookingData.find().toArray();
+      res.send(busSeatBook);
+    });
+
+    app.post('/busSeatBookingData', async (req, res) => {
+      
+          const bookingData = req.body;
+          const result = await busSeatBookingData.insertOne(bookingData);
+          res.status(201).send(result);
+      
+  })
+  
+    
 
     // cardriver
     app.post("/cardriveraccount", async (req, res) => {
@@ -333,6 +351,8 @@ async function run() {
       }
     });
 
+    
+
     // all cardata
     app.get("/cardata", async (req, res) => {
       const cardataresult = await cardata.find().toArray();
@@ -411,8 +431,10 @@ async function run() {
     });
 
     app.post("/busdata", async (req, res) => {
-      const { email, role, name, ...vehicleData } = req.body;
-
+      const { email, role, name, phone, ...vehicleData } = req.body;
+    
+      console.log("Received form data:", { email, role, name, phone, ...vehicleData });
+    
       try {
         const result = await busdata.insertOne({
           email,
@@ -421,14 +443,13 @@ async function run() {
           phone,
           ...vehicleData,
         });
-        res
-          .status(201)
-          .send({ message: "Form data saved successfully!", result });
+        res.status(201).send({ message: "Form data saved successfully!", result });
       } catch (error) {
+        console.error("Error saving form data:", error);
         res.status(500).send({ message: "Error saving form data", error });
       }
-      console.log(res, "tst");
     });
+    
     
     // car items types
     app.get("/cartypes", async (req, res) => {
